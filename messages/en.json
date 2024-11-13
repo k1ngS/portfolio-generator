@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "portfolio": {
+    "title": "Portfolio Generator",
+    "description": "Create your professional portfolio easily",
+    "personalInfo": {
+      "title": "Personal Information",
+      "name": "Your Name",
+      "role": "Your Role",
+      "about": "About You",
+      "avatar": "Profile Picture",
+      "avatarHint": "Upload a profile picture"
+    },
+    "skills": {
+      "title": "Skills",
+      "addSkill": "Add skill and press Enter"
+    },
+    "projects": {
+      "title": "Projects",
+      "addProject": "Add Project"
+    },
+    "deploy": {
+      "button": "Deploy to Github & Vercel",
+      "deploying": "Deploying..."
+    },
+    "preview": {
+      "title": "Preview",
+      "button": "See Preview",
+      "placeholder": {
+        "name": "Your Name",
+        "role": "Your Role",
+        "about": "About You"
+      }
+    }
+  }
+}

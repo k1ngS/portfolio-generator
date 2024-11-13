@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "projects": "Projetos",
+    "contact": "Contato"
+  },
+  "portfolio": {
+    "title": "Gerador de Portfólio",
+    "description": "Crie seu portfólio profissional facilmente",
+    "personalInfo": {
+      "title": "Informações Pessoais",
+      "name": "Seu Nome",
+      "role": "Sua Função",
+      "about": "Sobre Você",
+      "avatar": "Foto de Perfil",
+      "avatarHint": "Faça o upload de uma foto de perfil"
+    },
+    "skills": {
+      "title": "Habilidades",
+      "addSkill": "Adicione uma habilidade e pressione Enter"
+    },
+    "projects": {
+      "title": "Projetos",
+      "addProject": "Adicionar Projeto"
+    },
+    "deploy": {
+      "button": "Publicar no Github e Vercel",
+      "deploying": "Publicando..."
+    },
+    "preview": {
+      "title": "Visualização",
+      "button": "Ver Visualização",
+      "placeholder": {
+        "name": "Seu Nome",
+        "role": "Sua Função",
+        "about": "Sobre Você"
+      }
+    }
+  }
+}
