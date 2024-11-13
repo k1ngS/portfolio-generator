@@ -2,6 +2,7 @@ export interface PortfolioData {
   name: string
   role: string
   about: string
+  avatar?: string | File;
   skills: string[]
   projects: {
     title: string

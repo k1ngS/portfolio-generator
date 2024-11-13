@@ -6,12 +6,13 @@ import { Loader2, Github, Upload, Eye } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { ImageOptimizer } from './components/ImageOptimizer'
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import TextAreaLimited from '@/components/TextAreaLimited';
+import ProfileAvatar from '@/components/ProfileAvatar';
 
 // Schema de validação
 const portfolioSchema = z.object({
@@ -20,7 +21,7 @@ const portfolioSchema = z.object({
   about: z.string().min(50, 'Please write at least 50 characters about yourself'),
   email: z.string().email('Invalid email address'),
   skills: z.array(z.string()).min(1, 'Add at least one skill'),
-  avatar: z.string().optional()
+  avatar: z.union([z.string(), z.instanceof(File)]).optional()
 });
 
 
@@ -71,48 +72,23 @@ export default function Home() {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+
+  const handleImageUpload = (file: File | null, url: string | null) => {
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setValue('avatar', reader.result);
-      };
-      reader.readAsDataURL(file);
+      setValue('avatar', file); // Armazena o arquivo para o envio
+    } else {
+      setValue('avatar', ''); // Limpa o campo se a imagem for removida
     }
   };
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Avatar Upload */}
-        <div className="flex items-center space-x-4">
-          <div className="relative w-24 h-24">
-            {formData.avatar ? (
-              <ImageOptimizer
-                src={formData.avatar}
-                alt="Avatar"
-                width={96}
-                height={96}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
-                <Upload className="w-8 h-8 text-gray-400" />
-              </div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-          </div>
-          <div>
-            <Label>{t('personalInfo.avatar')}</Label>
-            <p className="text-sm text-gray-500">{t('personalInfo.avatarHint')}</p>
-          </div>
-        </div>
+        <ProfileAvatar
+          onImageChange={handleImageUpload}
+        />
 
         {/* Personal Information */}
         <div className="space-y-4">
@@ -142,7 +118,7 @@ export default function Home() {
 
           <div>
             <Label htmlFor="about">{t('personalInfo.about')}</Label>
-            <Textarea
+            <TextAreaLimited
               id="about"
               {...register('about')}
               className={`h-32 ${errors.about ? 'border-red-500' : ''}`}
@@ -186,7 +162,11 @@ export default function Home() {
                   <div className="space-y-6">
                     {formData.avatar && (
                       <img
-                        src={formData.avatar}
+                        src={
+                          formData.avatar instanceof File
+                            ? URL.createObjectURL(formData.avatar)
+                            : formData.avatar
+                        }
                         alt="Preview avatar"
                         className="w-32 h-32 rounded-full object-cover mx-auto"
                       />
