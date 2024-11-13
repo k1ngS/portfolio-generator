@@ -62,6 +62,7 @@ Principal componente do formulário que gerencia os dados do portfolio.
 - Preview em modal
 - Cache de formulário
 - Sanitização de inputs
+- Alteração no Avatar: O campo avatar agora pode aceitar tanto arquivos (File) quanto URLs. O preview da imagem é exibido com base no tipo de valor do campo.
 
 ```typescript
 interface PortfolioData {
@@ -69,37 +70,72 @@ interface PortfolioData {
   role: string;
   about: string;
   skills: string[];
-  avatar?: string;
+  avatar?: string | File;
   email: string;
 }
 ```
 
-### ImageOptimizer
-Componente para otimização e lazy loading de imagens.
-
-**Features:**
-- Lazy loading
-- Blur placeholder
-- Animação de carregamento
-- Otimização automática
-
-### UI Components (shadcn/ui)
-Conjunto de componentes base reutilizáveis:
-- Button
-- Dialog
-- Input
-- Label
-- Textarea
-- Toast
-
 ## Funcionalidades
 
-### SEO
-Implementado através do `meta-tags.tsx`:
-- Meta tags dinâmicas
-- OpenGraph tags
-- Twitter cards
-- Sitemap automático
+### Avatar Upload e Preview
+O campo avatar agora pode receber tanto arquivos (File) quanto URLs. Se um arquivo for enviado, ele será convertido em um URL temporário para o preview. Se uma URL for fornecida, ela será usada diretamente no campo.
+
+
+### Componente de Avatar:
+```tsx
+const handleImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setValue('avatar', reader.result);  // Armazena a URL do arquivo
+    };
+    reader.readAsDataURL(file);
+  }
+};
+```
+### Preview da Imagem:
+```tsx
+{formData.avatar && (
+  <img
+    src={
+      formData.avatar instanceof File
+        ? URL.createObjectURL(formData.avatar)  // Para arquivo
+        : formData.avatar  // Para URL
+    }
+    alt="Preview avatar"
+    className="w-32 h-32 rounded-full object-cover mx-auto"
+  />
+)}
+```
+
+### Submissão de Formulário
+O campo avatar pode ser enviado como um arquivo ou uma URL para o backend. Quando o campo avatar for um arquivo, ele será enviado como FormData. Caso contrário, será enviado como uma URL.
+
+```tsx
+const onSubmit = async (data) => {
+  const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('role', data.role);
+  formData.append('about', data.about);
+  formData.append('email', data.email);
+
+  data.skills.forEach((skill, index) => {
+    formData.append(`skills[${index}]`, skill);
+  });
+
+  if (data.avatar instanceof File) {
+    formData.append('avatar', data.avatar);
+  } else if (typeof data.avatar === 'string') {
+    formData.append('avatarUrl', data.avatar);
+  }
+
+  await fetch('/api/submit', {
+    method: 'POST',
+    body: formData,
+  });
+};
+```
 
 ### Cache
 Sistema de cache local para dados do formulário:
@@ -150,26 +186,6 @@ export function generateMetadata(data) {
 }
 ```
 
-### Otimizações de Performance
-1. Lazy Loading
-```typescript
-const Preview = dynamic(() => import('./Preview'))
-```
-
-2. Image Optimization
-```typescript
-
-```
-
-3. Cache
-```typescript
-// Salvando dados
-formCache.set('portfolioForm', formData)
-
-// Recuperando dados
-const cached = formCache.get('portfolioForm')
-```
-
 ## Segurança
 
 ### Sanitização de Inputs
@@ -185,6 +201,7 @@ const portfolioSchema = z.object({
   // ...
 })
 ```
+Essa atualização reflete as mudanças feitas para o campo avatar, incluindo a lógica de preview de imagem e o comportamento de envio de File ou URL.
 
 ## Boas Práticas
 
